@@ -1,0 +1,10 @@
+{
+    "AppSyncApiName": "notetaker",
+    "DynamoDBBillingMode": "PAY_PER_REQUEST",
+    "AuthCognitoUserPoolId": {
+        "Fn::GetAtt": [
+            "authcognitoe65e4064",
+            "Outputs.UserPoolId"
+        ]
+    }
+}
