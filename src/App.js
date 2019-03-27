@@ -2,7 +2,7 @@ import Amplify, { API, graphqlOperation } from 'aws-amplify';
 import { withAuthenticator } from 'aws-amplify-react';
 import React, { useEffect, useState } from 'react';
 import aws_exports from './aws-exports';
-import { createNote, updateNote } from './graphql/mutations';
+import { createNote, deleteNote, updateNote } from './graphql/mutations';
 import { listNotes } from './graphql/queries';
 
 Amplify.configure(aws_exports);
@@ -54,6 +54,20 @@ const App = () => {
     setNoteId('');
   };
 
+  const handleDelete = async id => {
+    const payload = { id };
+    const { data } = await API.graphql(
+      graphqlOperation(deleteNote, { input: payload })
+    );
+    const deletedNoteId = data.deleteNote.id;
+    const deletedNoteIndex = notes.findIndex(note => note.id === deletedNoteId);
+    const updatedNotes = [
+      ...notes.slice(0, deletedNoteIndex),
+      ...notes.slice(deletedNoteIndex + 1)
+    ];
+    setNotes(updatedNotes);
+  };
+
   const handleAddNote = async event => {
     event.preventDefault();
 
@@ -94,7 +108,10 @@ const App = () => {
             <li className="list pa1 f3" onClick={() => handleSetNote(item, i)}>
               {item.note}
             </li>
-            <button className="bg-transparent bn f4">
+            <button
+              className="bg-transparent bn f4"
+              onClick={() => handleDelete(item.id)}
+            >
               <span>&times;</span>
             </button>
           </div>
